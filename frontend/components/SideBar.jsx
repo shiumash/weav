@@ -6,8 +6,8 @@ const SideBar = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Profile', path: '/profile' },
     { name: 'Friends', path: '/friends' },
+    { name: 'Profile', path: '/profile' },
   ]
   return (
     <div className='sticky top-0 left-0 h-screen w-48 shadow-inner-2xl bg-slate-800'>

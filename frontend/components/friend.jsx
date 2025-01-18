@@ -1,13 +1,13 @@
 import React from 'react';
 
-const Friend = ({ friend }) => {
+const Friend = ({ email, tags, name, profile_picture }) => {
   return (
-    <li style={{ color: '#ffffff' }}>
-      <img src={friend.profile_picture} alt={friend.name} style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
-      <p>Name: {friend.name}</p>
-      <p>Email: {friend.email}</p>
-      <p>Tags: {friend.tags.join(', ')}</p>
-    </li>
+    <div className="friend-card">
+      <img src={profile_picture} alt={name} style={{ width: '150px', height: '150px', borderRadius: '50%' }} />
+      <p>Name: {name}</p>
+      {/* <p>Email: {email}</p> */}
+      <p>Tags: {tags.join(', ')}</p>
+    </div>
   );
 };
 
