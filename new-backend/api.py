@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
+from flask_cors import CORS
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, db, auth
 from functools import wraps
 
 # Initialize Firebase Admin SDK
@@ -75,15 +75,34 @@ def handle_user():
             'message': str(e)
         }), 500
 
-class Users(Resource):
-    def get(self):
+class Profile(Resource):
+    def get(self, user_id):
         try:
-            users = users_ref.get()
-            if not users:
-                return {"message": "No users found"}, 404
-            return users, 200
+            # Convert email to Firebase-compatible key
+            user_id_key = user_id.replace('.', ',')
+            user_ref = db.reference(f'users/{user_id_key}')
+            user_data = user_ref.get()
+            if not user_data:
+                return {"message": "User not found"}, 404
+
+            return user_data, 200
         except Exception as e:
-            return {"message": "Error retrieving users", "error": str(e)}, 500
+            return {"message": "Error retrieving profile", "error": str(e)}, 500
+
+    def put(self, user_id):
+        try:
+            # Convert email to Firebase-compatible key
+            user_id_key = user_id.replace('.', ',')
+            user_ref = db.reference(f'users/{user_id_key}')
+            user_data = user_ref.get()
+            if not user_data:
+                return {"message": "User not found"}, 404
+
+            update_data = request.json
+            user_ref.update(update_data)
+            return {"message": "Profile updated successfully"}, 200
+        except Exception as e:
+            return {"message": "Error updating profile", "error": str(e)}, 500
 
 class Friends(Resource):
     def get(self, user_id):
@@ -112,8 +131,120 @@ class Friends(Resource):
         except Exception as e:
             return {"message": "Error retrieving friends", "error": str(e)}, 500
 
-api.add_resource(Users, '/api/users/')
+class FriendRequest(Resource):
+    def post(self):
+        data = request.json
+        sender_email = data.get('sender_email')
+        receiver_email = data.get('receiver_email')
+
+        if not sender_email or not receiver_email:
+            return {"message": "Both sender and receiver emails are required"}, 400
+
+        sender_key = sender_email.replace('.', ',')
+        receiver_key = receiver_email.replace('.', ',')
+
+        sender_ref = db.reference(f'users/{sender_key}')
+        receiver_ref = db.reference(f'users/{receiver_key}')
+
+        sender_data = sender_ref.get()
+        receiver_data = receiver_ref.get()
+
+        if not sender_data:
+            return {"message": "Sender not found"}, 404
+        if not receiver_data:
+            return {"message": "Receiver not found"}, 404
+
+        # Add friend request to receiver's pending requests
+        pending_requests_ref = db.reference(f'users/{receiver_key}/pending_requests')
+        pending_requests = pending_requests_ref.get() or []
+        if sender_key not in pending_requests:
+            pending_requests.append(sender_key)
+            pending_requests_ref.set(pending_requests)
+
+        return {"message": "Friend request sent"}, 200
+
+class FriendRequestResponse(Resource):
+    def get(self, user_id):
+        try:
+            # Convert email to Firebase-compatible key
+            user_id_key = user_id.replace('.', ',')
+            user_ref = db.reference(f'users/{user_id_key}')
+            user_data = user_ref.get()
+            if not user_data:
+                return {"message": "User not found"}, 404
+
+            pending_requests = user_data.get('pending_requests', [])
+            requests_data = []
+            for sender_key in pending_requests:
+                sender_ref = db.reference(f'users/{sender_key}')
+                sender_data = sender_ref.get()
+                if sender_data:
+                    requests_data.append({
+                        "email": sender_data.get('email').replace(',', '.'),
+                        "name": sender_data.get('name'),
+                        "profile_picture": sender_data.get('profile_picture')
+                    })
+
+            return {"pending_requests": requests_data}, 200
+        except Exception as e:
+            return {"message": "Error retrieving friend requests", "error": str(e)}, 500
+
+    def post(self):
+        data = request.json
+        receiver_email = data.get('receiver_email')
+        sender_email = data.get('sender_email')
+        action = data.get('action')
+
+        if not receiver_email or not sender_email or not action:
+            return {"message": "Receiver email, sender email, and action are required"}, 400
+
+        receiver_key = receiver_email.replace('.', ',')
+        sender_key = sender_email.replace('.', ',')
+
+        receiver_ref = db.reference(f'users/{receiver_key}')
+        sender_ref = db.reference(f'users/{sender_key}')
+
+        receiver_data = receiver_ref.get()
+        sender_data = sender_ref.get()
+
+        if not receiver_data:
+            return {"message": "Receiver not found"}, 404
+        if not sender_data:
+            return {"message": "Sender not found"}, 404
+
+        # Remove friend request from receiver's pending requests
+        pending_requests_ref = db.reference(f'users/{receiver_key}/pending_requests')
+        pending_requests = pending_requests_ref.get() or []
+        if sender_key in pending_requests:
+            pending_requests.remove(sender_key)
+            pending_requests_ref.set(pending_requests)
+
+        if action == 'accept':
+            # Add each other to friends list
+            receiver_friends_ref = db.reference(f'users/{receiver_key}/friends')
+            sender_friends_ref = db.reference(f'users/{sender_key}/friends')
+
+            receiver_friends = receiver_friends_ref.get() or []
+            sender_friends = sender_friends_ref.get() or []
+
+            if sender_key not in receiver_friends:
+                receiver_friends.append(sender_key)
+                receiver_friends_ref.set(receiver_friends)
+
+            if receiver_key not in sender_friends:
+                sender_friends.append(receiver_key)
+                sender_friends_ref.set(sender_friends)
+
+            return {"message": "Friend request accepted"}, 200
+        elif action == 'decline':
+            return {"message": "Friend request declined"}, 200
+        else:
+            return {"message": "Invalid action"}, 400
+
+api.add_resource(Profile, '/api/profile/<string:user_id>')
 api.add_resource(Friends, '/api/users/<string:user_id>/friends')
+api.add_resource(FriendRequest, '/api/friend-request')
+api.add_resource(FriendRequestResponse, '/api/friend-request-response', '/api/friend-request-response/<string:user_id>')
 
 @app.route('/')
 def home():
