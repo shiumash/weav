@@ -121,10 +121,10 @@ class Friends(Resource):
                 friend_data = friend_ref.get()
                 if friend_data:
                     friends_data.append({
-                        "name": friend_data.get('name'),
-                        "profile_picture": friend_data.get('profile_picture'),
+                        "email": friend_id.replace(',', '.'),
                         "tags": friend_data.get('tags'),
-                        "email": friend_id.replace(',', '.')  # Convert back to regular email format
+                        "name": friend_data.get('name'),
+                        "profile_picture": friend_data.get('profile_picture')
                     })
 
             return {"friends": friends_data}, 200
