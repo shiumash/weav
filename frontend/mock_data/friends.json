@@ -4,19 +4,19 @@
       "email": "friend1@example.com",
       "tags": ["close", "work"],
       "name": "John Doe",
-      "profile_picture": "https://example.com/images/john_doe.jpg"
+      "profile_picture": "https://images.app.goo.gl/Ba5AoNMksn3G7uDE8"
     },
     {
       "email": "friend2@example.com",
       "tags": ["school", "gym"],
       "name": "Jane Smith",
-      "profile_picture": "https://example.com/images/jane_smith.jpg"
+      "profile_picture": "https://images.app.goo.gl/Ba5AoNMksn3G7uDE8"
     },
     {
       "email": "friend3@example.com",
       "tags": ["neighbor", "soccer"],
       "name": "Alice Johnson",
-      "profile_picture": "https://example.com/images/alice_johnson.jpg"
+      "profile_picture": "https://images.app.goo.gl/Ba5AoNMksn3G7uDE8"
     }
   ]
 }
