@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Outing from '@/components/Outing';
 import friendData from '@/mock_data/friends.json'; // Import the mock data
 
-const ProfilePage = () => {
+const HomePage = () => {
   const [friends, setFriends] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [outings, setOutings] = useState([]); // Initialize as an empty array
@@ -62,22 +62,23 @@ const ProfilePage = () => {
   const uniqueTags = [...new Set(friends.flatMap((friend) => friend.tags))];
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+    <div className="home-container" style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
       <Header />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px' }}>
         <div className="friends-list" style={{ textAlign: 'center', width: '100%' }}>
-          <h2 className="text-3xl font-bold mb-6" style={{ color: '#2c7a7b' }}>Select Friends!</h2>
+          <h2 className="text-3xl font-bold mb-6 text-slate-800">Select Friends!</h2>
           <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="tag-filter" style={{ marginRight: '10px', fontSize: '18px' }}>Filter by tags:</label>
+            <label htmlFor="tag-filter" className="text-slate-800" style={{ marginRight: '10px', fontSize: '18px' }}>Filter by tags:</label>
             <select
               id="tag-filter"
               multiple
               value={selectedTags}
               onChange={handleTagChange}
+              className="text-white bg-slate-800"
               style={{ height: '100px', width: '200px', fontSize: '16px', padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
             >
               {uniqueTags.map((tag) => (
-                <option key={tag} value={tag}>{tag}</option>
+                <option key={tag} value={tag} className="bg-slate-800 text-white">{tag}</option>
               ))}
             </select>
           </div>
@@ -95,7 +96,7 @@ const ProfilePage = () => {
           </ul>
           <button
             onClick={handleSubmit}
-            className='mt-4 p-2 bg-teal-500 text-white rounded'
+            className='mt-4 p-2 text-white rounded bg-slate-800'
             style={{ fontSize: '18px', padding: '10px 20px', cursor: 'pointer', border: 'none', borderRadius: '5px' }}
           >
             Weav Your Next Outing!
@@ -122,4 +123,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default HomePage;
