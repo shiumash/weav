@@ -32,7 +32,7 @@ const HomePage = () => {
         <Header />
         <section className="px-4 py-10">
           <div className="container-xl lg:container m-auto">
-            <h2 className="text-3xl font-bold text-white mb-6 text-center text-emerald-400">
+            <h2 className="text-3xl font-bold text-emerald- mb-6 text-center text-emerald-400">
               Your Top Wevents
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
