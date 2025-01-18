@@ -16,8 +16,8 @@ const Header = () => {
           >
             Weav
           </h1>
-          <p className="my-4 text-l text-3 text-green-900">
-            Sync your calendar with friends and family in realtime, simplifying planning for your next outing!
+          <p className="my-4 text-xl text-3 text-green-900">
+            Sync your calendar with others in realtime, simplifying planning for your next outing!
           </p>
         </div>
       </div>

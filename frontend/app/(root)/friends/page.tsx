@@ -15,11 +15,7 @@ const FriendPage = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
-    if (Array.isArray(friendData.friends)) {
       setFriends(friendData.friends);
-    } else {
-      console.error("friendData.friends is not an array");
-    }
   }, []);
 
   return (
