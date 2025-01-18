@@ -1,0 +1,15 @@
+{
+    "userId": "user123",
+    "email": "user@example.com",
+    "username": "user123",
+    "imageUrl": "https://example.com/images/user123.jpg",
+    "firstName": "John",
+    "lastName": "Doe",
+    "googleId": "google123",
+    "friends": [
+        "friend1@example.com",
+        "friend2@example.com" 
+    ],
+    "tags": ["vegan", "vegetarian"],
+    "createdAt": 1633024800000
+}
