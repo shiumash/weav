@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="w-screen min-h-screen bg-zinc-100">
+        <body className="w-screen min-h-screen bg-green-50">
           
           <div className="flex h-screen">
             <Sidebar />
