@@ -2,41 +2,20 @@
 
 import React, { useEffect, useState } from 'react';
 import userData from '../../../mock_data/user.json';
-import { useUser } from '@clerk/nextjs';
 import "./Profile.css";
 
-interface UserData {
-  firstName: string;
-  lastName: string;
-  username: string;
-  pfp: string
-  email: string;
-  is_vegetarian: boolean;
-  is_spicy: boolean;
-  is_family: boolean;
-}
-
 const ProfilePage = () => {
-  const { user } = useUser();
-  const initialUserData: UserData = {
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    username: user?.username || '',
-    pfp: user?.imageUrl || '',
-    email: user?.emailAddresses[0]?.emailAddress || '',
-    is_vegetarian: false,
-    is_spicy: false,
-    is_family: false
-  };
-  
-  const [profileData, setProfileData] = useState<UserData>(initialUserData);
+  const [profileData, setProfileData] = useState(userData);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserData>(initialUserData);
+  const [formData, setFormData] = useState(userData);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch('/api/user/?action=profile');
+        const response = await fetch('/api/user?action=profile');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
         const data = await response.json();
         setProfileData(data);
         setFormData(data);
@@ -48,23 +27,18 @@ const ProfilePage = () => {
     fetchProfileData();
   }, []);
 
-  const putProfileData = async (profileData) => {
-    try {
-      const response = await fetch('/api/user?action=profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      throw error;
+  const putProfileData = async (updatedProfile) => {
+    const response = await fetch('/api/user?action=profile', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedProfile),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    return await response.json();
   };
 
   const handleEditClick = () => {
@@ -72,12 +46,8 @@ const ProfilePage = () => {
   };
 
   const handleSaveClick = async () => {
-    try {
-      const updatedProfile = await postProfileData(formData);
-      setProfileData(updatedProfile);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error saving profile:', error);}
+    setProfileData(formData);
+    setIsEditing(false);
   };
 
   const handleCancelClick = () => {
@@ -106,7 +76,7 @@ const ProfilePage = () => {
       is_spicy: !formData.is_spicy
     });
   };
-  
+
   const handleFamilyToggleTag = () => {
     setFormData({
       ...formData,
@@ -224,7 +194,7 @@ const ProfilePage = () => {
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
                     checked={formData.is_vegetarian}
-                    onChange={() => handleVegetarianToggleTag}
+                    onChange={handleVegetarianToggleTag}
                   />
                 </label>
               </div>
@@ -235,7 +205,7 @@ const ProfilePage = () => {
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
                     checked={formData.is_spicy}
-                    onChange={() => handleSpicyToggleTag}
+                    onChange={handleSpicyToggleTag}
                   />
                 </label>
               </div>
@@ -246,7 +216,7 @@ const ProfilePage = () => {
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
                     checked={formData.is_family}
-                    onChange={() => handleFamilyToggleTag}
+                    onChange={handleFamilyToggleTag}
                   />
                 </label>
               </div>
