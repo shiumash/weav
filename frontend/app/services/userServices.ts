@@ -70,10 +70,8 @@ const fetchUserProfile = async (userId: string) => {
       select: {
         id: true,
         email: true,
-        name: true,
+        username: true,
         profilePic: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
@@ -88,11 +86,9 @@ const fetchUserProfile = async (userId: string) => {
   }
 };
 
-const fetchUserFriends = async (userId: string) => {
+async function fetchUserFriends(userId: string) {
   try {
-    // Convert userId to BigInt since schema uses BigInt
     const userIdBigInt = BigInt(userId);
-    // if this does work just do Numer(userId)
 
     // Get all friend relationships where user is either initiator or receiver
     const friendships = await prisma.friend.findMany({
@@ -104,7 +100,9 @@ const fetchUserFriends = async (userId: string) => {
       },
       select: {
         user_id: true,
-        friend_id: true
+        friend_id: true,
+        user: true,
+        friend: true
       }
     });
 
@@ -112,60 +110,40 @@ const fetchUserFriends = async (userId: string) => {
     const confirmedFriendIds = new Set<bigint>();
     const friendPairs = new Map<string, Set<bigint>>();
 
-    interface Friendship {
-      user_id: bigint;
-      friend_id: bigint;
-    }
+    friendships.forEach(friendship => {
+      const { user_id, friend_id } = friendship;
+      const key = `${user_id}-${friend_id}`;
+      const reverseKey = `${friend_id}-${user_id}`;
 
-    interface FriendPairs {
-      [key: string]: Set<bigint>;
-    }
-
-    friendships.forEach((friendship: Friendship) => {
-      const key: string = friendship.user_id < friendship.friend_id 
-        ? `${friendship.user_id}-${friendship.friend_id}`
-        : `${friendship.friend_id}-${friendship.user_id}`;
-      
-      if (!friendPairs.has(key)) {
-        friendPairs.set(key, new Set());
-      }
-      friendPairs.get(key)?.add(friendship.user_id);
-      friendPairs.get(key)?.add(friendship.friend_id);
-
-      // If both users are in the set, it's a confirmed friendship
-      if (friendPairs.get(key)?.size === 2) {
-        const friendId: bigint = friendship.user_id === userIdBigInt 
-          ? friendship.friend_id 
-          : friendship.user_id;
-        confirmedFriendIds.add(friendId);
+      if (friendPairs.has(reverseKey)) {
+        confirmedFriendIds.add(user_id);
+        confirmedFriendIds.add(friend_id);
+      } else {
+        friendPairs.set(key, new Set([user_id, friend_id]));
       }
     });
 
-    // Fetch details for confirmed friends
-    const friends = await prisma.user.findMany({
+    // Fetch user details for confirmed friends
+    const confirmedFriends = await prisma.user.findMany({
       where: {
-        id: {
-          in: Array.from(confirmedFriendIds)
-        }
+        id: { in: Array.from(confirmedFriendIds) }
       },
       select: {
+        id: true,
         firstName: true,
         lastName: true,
-        profilePic: true,
+        username: true,
         email: true,
-        is_vegetarian: true,
-        is_spicy: true,
-        is_family: true
+        profilePic: true
       }
     });
 
-    return friends;
-
+    return confirmedFriends;
   } catch (error) {
-    console.error('Error fetching user friends:', error);
-    throw new Error('Failed to fetch user friends');
+    console.error('Error fetching friends:', error);
+    throw error;
   }
-};
+}
 
 export {
   addUserData,

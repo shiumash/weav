@@ -48,7 +48,7 @@ const HomePage = (userId: string) => {
    setParticipantEmails(selectedFriends);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async ({ user }) => {
     getParticipantEmails();
 
     const payload = {
