@@ -162,29 +162,6 @@ const HomePage = () => {
           <p className="text-xl text-gray-500">No current Wevents</p>
         )}
       </div>
-      <>
-      <Outing
-            key="1"
-            id="1"
-            name="Beach Party"
-            description="A fun day at the beach with friends."
-            userEmail="organizer@example.com"
-            startTime="2023-10-01T10:00:00Z"
-            endTime="2023-10-01T18:00:00Z"
-            participants={["friend1@example.com", "friend2@example.com", "friend3@example.com"]}
-          />
-          <Outing
-            key="1"
-            id="1"
-            name="Beach Party"
-            description="A fun day at the beach with friends."
-            userEmail="organizer@example.com"
-            startTime="2023-10-01T10:00:00Z"
-            endTime="2023-10-01T18:00:00Z"
-            participants={["friend1@example.com", "friend2@example.com", "friend3@example.com"]}
-          />
-      
-      </>
     </div>
   );
 };
