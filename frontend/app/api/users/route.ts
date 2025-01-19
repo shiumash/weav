@@ -1,6 +1,7 @@
 import {
     addUserData,
-    addFriendData
+    addFriendData,
+    updateUserData
   } from "@/app/services/userServices";
   
 // app/api/users/route.ts - For non-dynamic POST requests
@@ -37,3 +38,21 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+    try {
+      const userData = await request.json();
+      const updatedUser = await updateUserData(userData);
+      
+      return NextResponse.json({
+        success: true,
+      });
+      
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return NextResponse.json(
+        { error: 'Failed to update user' },
+        { status: 500 }
+      );
+    }
+  }
