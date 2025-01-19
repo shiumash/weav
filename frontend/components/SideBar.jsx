@@ -5,7 +5,7 @@ import ActiveLink from './ActiveLink'
 const SideBar = () => {
 
   const navItems = [
-    { name: 'Home', path: '/' },
+    { name: 'Home', path: '/home' },
     { name: 'Friends', path: '/friends' },
     { name: 'Profile', path: '/profile' },
   ]
