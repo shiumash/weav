@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Outing from '@/components/Outing';
 import friendData from '@/mock_data/friends.json'; // Import the mock data
 
-const HomePage = () => {
+const HomePage = (userId: string) => {
   const [friends, setFriends] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -20,7 +20,7 @@ const HomePage = () => {
     // Fetch user data
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/users');
+        const response = await fetch(`/api/user/${userId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -59,7 +59,7 @@ const HomePage = () => {
 
     try {
       // Send the selected friends to the backend
-      const response = await fetch('/api/outing', {
+      const response = await fetch('/api/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

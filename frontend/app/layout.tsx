@@ -5,6 +5,7 @@ import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton, useUser }
 import Sidebar from "../components/SideBar"; // Correct the import path
 import "../app/globals.css"
 
+
 function UserInfoProvider() {
   const { user } = useUser();
   const [userInfo, setUserInfo] = useState({});
