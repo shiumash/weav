@@ -14,7 +14,6 @@ The frontend is built using React.js and Next.js, leveraging the power of modern
 
 ```bash
 npm install
-npm run dev
 ```
 
 ## License
