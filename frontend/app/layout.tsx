@@ -9,6 +9,10 @@ import "../app/globals.css";
 import { SharedProvider } from './context/SharedContext';
 import { currentUser } from '@clerk/nextjs/server';
 
+function UserInfoProvider() {
+  const { user } = useUser();
+  const [userInfo, setUserInfo] = useState({});
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   const [pid, setPid] = useState<string>('')

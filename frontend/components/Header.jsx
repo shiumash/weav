@@ -11,13 +11,13 @@ const Header = () => {
       >
         <div className="text-center">
           <h1
-            className="text-4xl font-bold sm:text-5l md:text-6xl"
+            className="text-8xl font-bold sm:text-5xl md:text-7xl"
             style={{ color: '#34d399' }}
           >
-            Weav
+            weav
           </h1>
-          <p className="my-4 text-l text-3 text-green-900">
-            Sync your calendar with friends and family in realtime, simplifying planning for your next outing!
+          <p className="my-4 text-xl text-3 text-green-900">
+            Sync your calendar with others in realtime, simplifying planning for your next outing!
           </p>
         </div>
       </div>

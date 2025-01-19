@@ -1,12 +1,24 @@
+import { fetchEvents } from "@/app/services/eventsServices";
+import { NextResponse } from "next/server";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = (await params).id // 'a', 'b', or 'c'
-  return Response.json({ userId })
-}
+  try {
+    const userId = (await params).id;
+    const events = await fetchEvents(userId);
+    
+    return NextResponse.json({ 
+      success: true,
+      events: events 
+    });
 
-export async function POST(request: Request) {
-  const data = await request.json()
-  return Response.json({ message: 'Event created', data })
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch events' },
+      { status: 500 }
+    );
+  }
 }
