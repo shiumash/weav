@@ -8,7 +8,6 @@ const ProfilePage = () => {
   const [profileData, setProfileData] = useState(userData);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(userData);
-  const [newTag, setNewTag] = useState('');
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -33,21 +32,14 @@ const ProfilePage = () => {
     });
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
+  const handleToggleTag = (tag: string) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove),
+      tags: {
+        ...formData.tags,
+        [tag]: !formData.tags[tag],
+      },
     });
-  };
-
-  const handleAddTag = () => {
-    if (newTag && !formData.tags.includes(newTag)) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag],
-      });
-      setNewTag('');
-    }
   };
 
   return (
@@ -118,39 +110,49 @@ const ProfilePage = () => {
             profileData.email
           )}
         </div>
-        {/* <div className="mt-3">
-          <strong>Friends:</strong>{' '}
-          {profileData.friends.join(', ')}
-        </div> */}
         <div className="mt-3">
           <strong>Tags:</strong>{' '}
           {isEditing ? (
-            <div>
-              {formData.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="badge badge-outline mr-2 cursor-pointer hover:badge-accent hover:text-black"
-                  onClick={() => handleRemoveTag(tag)}
-                >
-                  {tag} &times;
-                </span>
-              ))}
-              <input
-                type="text"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Add a tag"
-                className="input input-bordered"
-              />
-              <button onClick={handleAddTag} className="btn btn-primary ml-2 text-white-200">Add Tag</button>
+            <div className="flex space-x-4">
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="label-text">Vegetarian</span>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-emerald"
+                    checked={formData.tags.vegetarian}
+                    onChange={() => handleToggleTag('vegetarian')}
+                  />
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="label-text">Spicy</span>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-emerald"
+                    checked={formData.tags.spicy}
+                    onChange={() => handleToggleTag('spicy')}
+                  />
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="cursor-pointer label">
+                  <span className="label-text">Family</span>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-emerald"
+                    checked={formData.tags.family}
+                    onChange={() => handleToggleTag('family')}
+                  />
+                </label>
+              </div>
             </div>
           ) : (
             <div>
-              {profileData.tags.map((tag, index) => (
-                <span key={index} className="badge badge-outline mr-2 cursor-pointer hover:badge-accent hover:badge-text-white">
-                  {tag}
-                </span>
-              ))}
+              {profileData.tags.vegetarian && <span className="badge badge-emerald mr-2">Vegetarian</span>}
+              {profileData.tags.spicy && <span className="badge badge-emerald mr-2">Spicy</span>}
+              {profileData.tags.family && <span className="badge badge-emerald mr-2">Family</span>}
             </div>
           )}
         </div>
@@ -161,7 +163,7 @@ const ProfilePage = () => {
           <button onClick={handleCancelClick} className="btn btn-secondary ml-2">Cancel</button>
         </>
       ) : (
-        <button onClick={handleEditClick} className="btn btn-primary profile-change">Edit Account</button>
+        <button onClick={handleEditClick} className="btn btn-primary profile-change" style={{ backgroundColor: '#10B981' }}>Edit Account</button>
       )}
     </div>
   );
