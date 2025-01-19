@@ -8,7 +8,7 @@ weav is a smart scheduling app that seamlessly syncs availability and integrates
 - Event planning system offers intelligent outing suggestions based on shared availability windows among participants
 
 ## Technical Stack
-The frontend is built using React.js and Next.js, leveraging the power of modern web technologies to provide a smooth, responsive user experience. The interface is styled using Tailwind CSS, with TypeScript support for enhanced code reliability and maintainability. The backend utilizes a REST API, GCal API, as well as Google Gemini Wrapper.
+The frontend is built using React.js and Next.js, and the interface is styled with Tailwind CSS, and TypeScript support. The backend utilizes a REST API, GCal API, as well as Google Gemini Wrapper.
 
 ## Installation
 
