@@ -6,7 +6,6 @@ const SideBar = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Friends', path: '/friends' },
     { name: 'Profile', path: '/profile' },
   ]
   return (

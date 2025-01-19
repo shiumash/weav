@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Outing from '@/components/Outing';
 import friendData from '@/mock_data/friends.json'; // Import the mock data
+import { v4 as uuidv4 } from 'uuid'; // Import UUID for generating unique links
 
 const HomePage = () => {
   const [friends, setFriends] = useState([]);
@@ -11,6 +12,8 @@ const HomePage = () => {
   const [outings, setOutings] = useState([]); // Initialize as an empty array
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // State for selected tags
+  const [partyLink, setPartyLink] = useState(''); // State for the generated party link
+  const [showModal, setShowModal] = useState(false); // State for showing the modal
 
   useEffect(() => {
     // Use the imported mock data to set the friends list
@@ -55,6 +58,13 @@ const HomePage = () => {
     setSelectedTags(value);
   };
 
+  const generatePartyLink = () => {
+    const uniqueId = uuidv4();
+    const link = `${window.location.origin}/join-party/${uniqueId}`;
+    setPartyLink(link);
+    setShowModal(true);
+  };
+
   const filteredFriends = selectedTags.length > 0
     ? friends.filter((friend) => selectedTags.every((tag) => friend.tags.includes(tag)))
     : friends;
@@ -97,9 +107,16 @@ const HomePage = () => {
           <button
             onClick={handleSubmit}
             className='mt-4 p-2 text-white rounded bg-slate-800'
-            style={{ fontSize: '18px', padding: '10px 20px', cursor: 'pointer', border: 'none', borderRadius: '5px' }}
+            style={{ fontSize: '18px', padding: '10px 20px', cursor: 'pointer', border: 'none', borderRadius: '5px', marginBottom: '10px' }}
           >
             Weav Your Next Outing!
+          </button>
+          <button
+            onClick={generatePartyLink}
+            className='mt-4 p-2 text-white rounded bg-slate-800'
+            style={{ fontSize: '18px', padding: '10px 20px', cursor: 'pointer', border: 'none', borderRadius: '5px' }}
+          >
+            Generate Party Link
           </button>
         </div>
         <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
@@ -119,6 +136,25 @@ const HomePage = () => {
           )}
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Party Link Generated</h3>
+            <p className="py-4">Share this link with your friends to join the party:</p>
+            <input
+              type="text"
+              value={partyLink}
+              readOnly
+              className="input input-bordered w-full"
+            />
+            <div className="modal-action">
+              <button onClick={() => setShowModal(false)} className="btn">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
