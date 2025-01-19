@@ -16,7 +16,6 @@ const ProfilePage = () => {
   const handleSaveClick = () => {
     setProfileData(formData);
     setIsEditing(false);
-    // Here you would also update the JSON data on the server or local storage
   };
 
   const handleCancelClick = () => {
