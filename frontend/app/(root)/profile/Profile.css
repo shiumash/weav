@@ -85,29 +85,12 @@ button {
     font-size: 16px;
     font-weight: bold;
     color: #fff;
-    background-color: #34d399;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
-    background-color: #059669;
-    transform: scale(1.05);
-}
-
-button:active {
-    background-color: #065f46;
-}
-
-button:last-of-type, .profile-change {
-    background-color: #f87171;
-}
-
-button:last-of-type:hover, .profile-change {
-    background-color: #dc2626;
-}
 
 input {
     width: 100%;
@@ -122,4 +105,3 @@ input {
 input:focus {
     box-shadow: 0 0 5px rgba(52, 211, 153, 0.5); /* Subtle green glow on focus */
 }
-

@@ -76,7 +76,9 @@ const ProfilePage = () => {
                 </div>
               </>
             ) : (
-              `${profileData.firstName} ${profileData.lastName}`
+              <div className="text-4xl mt-3">
+                {profileData.firstName} {profileData.lastName}
+              </div>
             )}
           </strong>
         </h1>
@@ -159,11 +161,11 @@ const ProfilePage = () => {
       </div>
       {isEditing ? (
         <>
-          <button onClick={handleSaveClick} className="btn btn-success">Save Changes</button>
-          <button onClick={handleCancelClick} className="btn btn-secondary ml-2">Cancel</button>
+          <button onClick={handleSaveClick} className="btn btn-success bg-emerald-400 hover:bg-emerald-700 text-slate-100">Save Changes</button>
+          <button onClick={handleCancelClick} className="btn btn-secondary ml-2 bg-rose-400 hover:bg-rose-500 text-slate-100">Cancel</button>
         </>
       ) : (
-        <button onClick={handleEditClick} className="btn btn-primary profile-change" style={{ backgroundColor: '#10B981' }}>Edit Account</button>
+        <button onClick={handleEditClick} className="btn btn-primary profile-change text-slate-100" style={{ backgroundColor: '#10B981' }}>Edit Account</button>
       )}
     </div>
   );
