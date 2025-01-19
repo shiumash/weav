@@ -1,10 +1,24 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const FriendPage = (pid: string) => {
   const [friends, setFriends] = useState<any[]>([]);
   const [newFriendEmail, setNewFriendEmail] = useState('');
+
+  useEffect(() => {
+    const fetchFriendData = async () => {
+      try {
+        const response = await fetch('/api/user/?action=friends');
+        const data = await response.json();
+        setFriends(data.friends); // Assuming the response has a 'friends' field
+      } catch (error) {
+        console.error('Error fetching friends data:', error);
+      }
+    };
+
+    fetchFriendData();
+  }, []);
 
   const postFriendData = async (newFriend) => {
     try {
@@ -25,7 +39,7 @@ const FriendPage = (pid: string) => {
     }
   };
 
-  const getFriendData = async ({pid: string}) => {
+  const getFriendData = async (newFriend /*{pid: string}*/) => {
     try {
       const response = await fetch(`/api/users/{pid}?action=friends`, {
         method: 'GET',
@@ -77,6 +91,13 @@ const FriendPage = (pid: string) => {
                   Add Friend
                 </button>
               </div>
+              {/* Refresh Friends List Button */}
+              <button 
+                  className="btn border-emerald-400 bg-emerald-400 text-white hover:border-emerald-700 hover:bg-emerald-700 px-4 py-2 rounded-md shadow-md" 
+                  onClick={() => {}}
+                >
+                  Refresh Friends List
+                </button>
             </div>
 
             {/* Add Friend Modal */}
@@ -122,6 +143,44 @@ const FriendPage = (pid: string) => {
                 </div>
               </div>
             </dialog>
+
+            {/* Friends List */}
+            <div className="flex flex-col items-center gap-6">
+              {friends.map((friend, index) => {
+                const trueTags = Object.keys(friend.tags).filter((tag) => friend.tags[tag]);
+                return (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between bg-white shadow-md border border-gray-200 rounded-lg p-4 w-full max-w-3xl"
+                  >
+                    {/* Profile Picture */}
+                    <img 
+                      src={friend.profile_picture} 
+                      alt={friend.name} 
+                      className="w-16 h-16 rounded-full object-cover mr-4"
+                    />
+
+                    {/* Friend Details */}
+                    <div className="flex flex-col flex-1">
+                      <h3 className="text-lg font-semibold text-gray-800">{friend.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{friend.email}</p>
+                    </div>
+
+                    {/* Friend Tags */}
+                    <div className="flex flex-wrap justify-end gap-1">
+                      {trueTags.slice(0, 3).map((tag, idx) => (
+                        <span 
+                          key={idx} 
+                          className="badge px-3 py-1 text-sm text-zinc-100 bg-slate-800 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
       </div>

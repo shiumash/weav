@@ -10,18 +10,23 @@
   "dependencies": {
     "@clerk/nextjs": "^6.9.14",
     "@clerk/themes": "^2.2.8",
+    "@prisma/client": "^6.2.1",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^11.2.0",
     "lucide-react": "^0.473.0",
     "next": "14.2.16",
-    "react": "^18",
-    "react-dom": "^18",
+    "prisma": "^6.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "shadcn-ui": "^0.9.4",
+    "tailwind": "^4.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/node": "^20",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18",
@@ -29,7 +34,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.16",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }

@@ -9,6 +9,21 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(userData);
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch('/api/user/?action=profile');
+        const data = await response.json();
+        setProfileData(data);
+        setFormData(data);
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    fetchProfileData();
+  });
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -150,7 +165,7 @@ const ProfilePage = () => {
                   <span className="label-text">Vegetarian</span>
                   <input
                     type="checkbox"
-                    className="toggle toggle-emerald"
+                    className="toggle toggle-emerald ml-1"
                     checked={formData.tags.vegetarian}
                     onChange={() => handleToggleTag('vegetarian')}
                   />
@@ -161,18 +176,18 @@ const ProfilePage = () => {
                   <span className="label-text">Spicy</span>
                   <input
                     type="checkbox"
-                    className="toggle toggle-emerald"
+                    className="toggle toggle-emerald ml-1"
                     checked={formData.tags.spicy}
                     onChange={() => handleToggleTag('spicy')}
                   />
                 </label>
               </div>
               <div className="form-control">
-                <label className="cursor-pointer label">
+                <label className="cursor-pointer label ml-1">
                   <span className="label-text">Family</span>
                   <input
                     type="checkbox"
-                    className="toggle toggle-emerald"
+                    className="toggle toggle-emerald ml-1"
                     checked={formData.tags.family}
                     onChange={() => handleToggleTag('family')}
                   />
@@ -190,11 +205,11 @@ const ProfilePage = () => {
       </div>
       {isEditing ? (
         <>
-          <button onClick={handleSaveClick} className="btn btn-success">Save Changes</button>
-          <button onClick={handleCancelClick} className="btn btn-secondary ml-2">Cancel</button>
+          <button onClick={handleSaveClick} className="btn btn-success bg-emerald-300 hover:bg-emerald-500">Save Changes</button>
+          <button onClick={handleCancelClick} className="btn btn-secondary ml-2 bg-rose-300 hover:bg-rose-500">Cancel</button>
         </>
       ) : (
-        <button onClick={handleEditClick} className="btn btn-primary profile-change" style={{ backgroundColor: '#10B981' }}>Edit Account</button>
+        <button onClick={handleEditClick} className="btn btn-primary profile-change bg-emerald-300 hover:bg-emerald-500">Edit Account</button>
       )}
     </div>
   );
