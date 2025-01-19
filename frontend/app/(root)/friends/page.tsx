@@ -2,16 +2,57 @@
 
 import React, { useState } from 'react';
 
-const FriendPage = () => {
-  const [friends, setFriends] = useState([]);
+const FriendPage = (pid: string) => {
+  const [friends, setFriends] = useState<any[]>([]);
   const [newFriendEmail, setNewFriendEmail] = useState('');
 
-  const handleAddFriend = (e) => {
+  const postFriendData = async (newFriend) => {
+    try {
+      const response = await fetch('/api/users?action=friend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFriend),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error adding friend:', error);
+      throw error;
+    }
+  };
+
+  const getFriendData = async ({pid: string}) => {
+    try {
+      const response = await fetch(`/api/users/{pid}?action=friends`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting friend:', error);
+      throw error;
+    }
+  }
+
+  const handleAddFriend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newFriend = { email: newFriendEmail, tags: [], name: '', profile_picture: '' };
-    const updatedFriends = [...friends, newFriend];
-    setFriends(updatedFriends);
-    setNewFriendEmail('');
+    try {
+      const addedFriend = await postFriendData(newFriend);
+      setFriends([...friends, addedFriend]);
+      setNewFriendEmail('');
+    } catch (error) {
+      // Handle error if needed
+    }
   };
 
   return (
@@ -34,14 +75,6 @@ const FriendPage = () => {
                   onClick={() => (document.getElementById('my_modal_1') as HTMLDialogElement)?.showModal()}
                 >
                   Add Friend
-                </button>
-
-                {/* Refresh Friends List Button */}
-                <button 
-                  className="btn border-emerald-400 bg-emerald-400 text-white hover:border-emerald-700 hover:bg-emerald-700 px-4 py-2 rounded-md shadow-md" 
-                  onClick={() => {}}
-                >
-                  Refresh Friends List
                 </button>
               </div>
             </div>
@@ -84,53 +117,11 @@ const FriendPage = () => {
                 </form>
                 <div className="modal-action">
                   <form method="dialog">
-                    {/* Close button */}
-                    <button 
-                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-200"
-                    >
-                      Close
-                    </button>
+                    <button className="btn">Close</button>
                   </form>
                 </div>
               </div>
             </dialog>
-
-            <div className="flex flex-col items-center gap-6">
-              {friends.map((friend, index) => {
-                const trueTags = Object.keys(friend.tags).filter((tag) => friend.tags[tag]);
-                return (
-                  <div 
-                    key={index} 
-                    className="flex items-center justify-between bg-white shadow-md border border-gray-200 rounded-lg p-4 w-full max-w-3xl"
-                  >
-                    {/* Profile Picture */}
-                    <img 
-                      src={friend.profile_picture} 
-                      alt={friend.name} 
-                      className="w-16 h-16 rounded-full object-cover mr-4"
-                    />
-
-                    {/* Friend Details */}
-                    <div className="flex flex-col flex-1">
-                      <h3 className="text-lg font-semibold text-gray-800">{friend.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">{friend.email}</p>
-                    </div>
-
-                    {/* Friend Tags */}
-                    <div className="flex flex-wrap justify-end gap-1">
-                      {trueTags.slice(0, 3).map((tag, idx) => (
-                        <span 
-                          key={idx} 
-                          className="badge px-3 py-1 text-sm text-zinc-100 bg-slate-800 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </section>
       </div>
