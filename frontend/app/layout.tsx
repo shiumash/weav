@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import Sidebar from "../components/SideBar"; // Correct the import path
-import "../app/globals.css"
+import "../app/globals.css";
 
 
 function UserInfoProvider() {
@@ -25,8 +25,8 @@ function UserInfoProvider() {
       };
       setUserInfo(userData);
 
-      // Send user info to the backend
-      fetch('http://localhost:5000/api/user', {
+      // Send user info to the backend via the API route
+      fetch('/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,15 +43,19 @@ function UserInfoProvider() {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
+  
   return (
-    <ClerkProvider>
+    <ClerkProvider dynamic>
       <html lang="en">
-        <body className="w-screen min-h-screen bg-green-50">
-          
+        <body className="w-screen min-h-screen bg-zinc-100">
           <div className="flex h-screen">
             <Sidebar />
             <main className="flex-1 p-10 overflow-y-auto">
-              <div className='flex justify-end mb-4 flex-1'>
+              <div className='flex justify-end mb-4 flex-1 bg-red-800'>
+                {
+                  
+                }
                 <SignedOut>
                   <SignInButton />
                 </SignedOut>
