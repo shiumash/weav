@@ -1,5 +1,8 @@
 import { fetchEvents } from "@/app/services/eventsServices";
 import { NextResponse } from "next/server";
+import { useUser } from "@clerk/nextjs";
+
+const userData = useUser();
 
 export async function GET(
   request: Request,
@@ -7,7 +10,7 @@ export async function GET(
 ) {
   try {
     const userId = (await params).id;
-    const events = await fetchEvents(userId);
+    const events = await fetchEvents(userData);
     
     return NextResponse.json({ 
       success: true,

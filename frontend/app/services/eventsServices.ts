@@ -1,6 +1,42 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios'
 
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
+
+const execAsync = promisify(exec);
+
+interface PythonResponse {
+  success: boolean;
+  data: any;
+  error?: string;
+}
+
+export async function executePythonScript(inputData: any): Promise<PythonResponse> {
+  try {
+    const scriptPath = path.join(process.cwd(), 'python', 'script.py');
+    const jsonString = JSON.stringify(inputData).replace(/"/g, '\\"');
+    const { stdout, stderr } = await execAsync(`python3 "${scriptPath}" "${jsonString}"`);
+    
+    if (stderr) {
+      throw new Error(stderr);
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(stdout)
+    };
+  } catch (error) {
+    console.error('Python execution error:', error);
+    return {
+      success: false,
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
 const prisma = new PrismaClient();
 
 const fetchEvents = async (userId: string) => {
