@@ -6,7 +6,7 @@ const FriendPage = (pid: string) => {
   const [friends, setFriends] = useState<any[]>([]);
   const [newFriendEmail, setNewFriendEmail] = useState('');
 
-  const postFriendData = async (newFriend) => {
+  const postFriendData = async (newFriend: any) => {
     try {
       const response = await fetch('/api/users?action=friend', {
         method: 'POST',
@@ -25,14 +25,20 @@ const FriendPage = (pid: string) => {
     }
   };
 
-  const getFriendData = async () => {
+  const getFriendData = async (friendId?: string) => {
     try {
-      const response = await fetch(`/api/users/${pid}?action=friends`, {
+      const baseUrl = '/api/users';
+      const url = friendId 
+        ? `${baseUrl}/${friendId}?action=friends`
+        : `${baseUrl}?action=friends`;
+  
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+      
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

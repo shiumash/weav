@@ -2,12 +2,36 @@
 
 import React, { useEffect, useState } from 'react';
 import userData from '../../../mock_data/user.json';
+import { useUser } from '@clerk/nextjs';
 import "./Profile.css";
 
+interface UserData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  pfp: string
+  email: string;
+  is_vegetarian: boolean;
+  is_spicy: boolean;
+  is_family: boolean;
+}
+
 const ProfilePage = () => {
-  const [profileData, setProfileData] = useState(userData);
+  const { user } = useUser();
+  const initialUserData: UserData = {
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    username: user?.username || '',
+    pfp: user?.imageUrl || '',
+    email: user?.emailAddresses[0]?.emailAddress || '',
+    is_vegetarian: false,
+    is_spicy: false,
+    is_family: false
+  };
+  
+  const [profileData, setProfileData] = useState<UserData>(initialUserData);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(userData);
+  const [formData, setFormData] = useState<UserData>(initialUserData);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -24,14 +48,14 @@ const ProfilePage = () => {
     fetchProfileData();
   }, []);
 
-  const postProfileData = async (updatedProfile) => {
+  const putProfileData = async (profileData) => {
     try {
       const response = await fetch('/api/user?action=profile', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedProfile),
+        body: JSON.stringify(profileData),
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -53,8 +77,7 @@ const ProfilePage = () => {
       setProfileData(updatedProfile);
       setIsEditing(false);
     } catch (error) {
-      // Handle error if needed
-    }
+      console.error('Error saving profile:', error);}
   };
 
   const handleCancelClick = () => {
@@ -70,13 +93,24 @@ const ProfilePage = () => {
     });
   };
 
-  const handleToggleTag = (tag: string) => {
+  const handleVegetarianToggleTag = () => {
     setFormData({
       ...formData,
-      tags: {
-        ...formData.tags,
-        [tag]: !formData.tags[tag],
-      },
+      is_vegetarian: !formData.is_vegetarian
+    });
+  };
+  
+  const handleSpicyToggleTag = () => {
+    setFormData({
+      ...formData,
+      is_spicy: !formData.is_spicy
+    });
+  };
+  
+  const handleFamilyToggleTag = () => {
+    setFormData({
+      ...formData,
+      is_family: !formData.is_family
     });
   };
 
@@ -87,7 +121,7 @@ const ProfilePage = () => {
       reader.onloadend = () => {
         setFormData({
           ...formData,
-          imageUrl: reader.result as string,
+          pfp: reader.result as string,
         });
       };
       reader.readAsDataURL(file);
@@ -113,7 +147,7 @@ const ProfilePage = () => {
         ) : (
           <img
             className="profile-image"
-            src={profileData.imageUrl}
+            src={profileData.pfp}
             alt={profileData.username}
           />
         )}
@@ -189,8 +223,8 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.tags.vegetarian}
-                    onChange={() => handleToggleTag('vegetarian')}
+                    checked={formData.is_vegetarian}
+                    onChange={() => handleVegetarianToggleTag}
                   />
                 </label>
               </div>
@@ -200,8 +234,8 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.tags.spicy}
-                    onChange={() => handleToggleTag('spicy')}
+                    checked={formData.is_spicy}
+                    onChange={() => handleSpicyToggleTag}
                   />
                 </label>
               </div>
@@ -211,17 +245,17 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.tags.family}
-                    onChange={() => handleToggleTag('family')}
+                    checked={formData.is_family}
+                    onChange={() => handleFamilyToggleTag}
                   />
                 </label>
               </div>
             </div>
           ) : (
             <div>
-              {profileData.tags.vegetarian && <span className="badge badge-emerald mr-2">Vegetarian</span>}
-              {profileData.tags.spicy && <span className="badge badge-emerald mr-2">Spicy</span>}
-              {profileData.tags.family && <span className="badge badge-emerald mr-2">Family</span>}
+              {profileData.is_vegetarian && <span className="badge badge-emerald mr-2">Vegetarian</span>}
+              {profileData.is_spicy && <span className="badge badge-emerald mr-2">Spicy</span>}
+              {profileData.is_family && <span className="badge badge-emerald mr-2">Family</span>}
             </div>
           )}
         </div>
