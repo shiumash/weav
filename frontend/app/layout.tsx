@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex h-screen">
             <Sidebar />
             <main className="flex-1 p-10 overflow-y-auto">
-              <div className='flex justify-end mb-4 flex-1 bg-red-800'>
+              <div className='flex justify-end mb-4 flex-1'>
                 {
                   
                 }
