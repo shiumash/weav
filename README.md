@@ -1,6 +1,6 @@
 # weav 🪡
 
-weav is a smart scheduling app that seamlessly syncs availability and integrates individual preferences to suggest events and outings. By weaving together schedules and preferences, friends and loved ones can coordinate their time together effectively.
+weav is a smart scheduling app that seamlessly syncs availability and integrates individual preferences to suggest events and outings. By weaving together schedules and preferences, friends and family can coordinate their time together effectively.
 
 ## Features
 - Provides synchronization of schedules while simultaneously detecting availability and preventing scheduling conflicts
