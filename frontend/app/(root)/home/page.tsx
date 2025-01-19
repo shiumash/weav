@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
-import Outing from '@/components/Outing';
 import friendData from '@/mock_data/friends.json'; // Import the mock data
 
-const HomePage = (userId: string) => {
+const HomePage = ({ userId }) => {
   const [friends, setFriends] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -26,13 +25,16 @@ const HomePage = (userId: string) => {
         }
         const data = await response.json();
         setUserData(data);
-      } catch (error) {
+        setFriends(data.friends);
+        } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [userId]);
+
+  
 
   const handleFriendClick = (friend) => {
     setSelectedFriends((prevSelectedFriends) => {
@@ -45,14 +47,20 @@ const HomePage = (userId: string) => {
   };
 
   const getParticipantEmails = () => {
-   setParticipantEmails(selectedFriends);
+    setParticipantEmails(selectedFriends);
   };
 
-  const handleSubmit = async ({ user }) => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     getParticipantEmails();
 
+    if (!userData) {
+      console.error('User data is not loaded');
+      return;
+    }
+
     const payload = {
-      senderEmail: 'currentUser@example.com', // Replace with actual current user email
+      senderEmail: userData.email, // Use actual current user email
       participantEmails,
       title: 'Outing Title', // Placeholder title
     };
@@ -100,7 +108,7 @@ const HomePage = (userId: string) => {
       <Header />
       <button
         className="btn btn-primary plan-wevent-button"
-        onClick={() => window.my_modal.showModal()}
+        onClick={() => document.getElementById('my_modal').showModal()}
         style={{ backgroundColor: '#10B981', position: 'absolute', top: '20px', right: '150px' }}
       >
         Plan Wevent
