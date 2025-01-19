@@ -1,26 +1,26 @@
 [
     {
       "creator": "912u09",
-      "name": "wpi",
-      "startTime": "1/25/2025",
-      "endTime": "1/26/2025",
-      "description": "wpi hackathon temp temp temp temp temp tem ptemp temp tempt emptemddd ptempte mptempt emp d dd d d d d d d d d dd d d d d d d d d d d d d d d d dd d d  d d d d  d d d  d d d d  d d  d d d d d  d d d d  d d d d  d d d d dd d d d  d d  d d  d d d  d d d d d d d d d d d  d d d d d  dd ",
-      "location": "worcester"
+      "name": "Goat Hacks",
+      "startTime": "1/17/2025",
+      "endTime": "1/19/2025",
+      "description": "Awesome hackathon at WPI",
+      "location": "Worcester"
     },
     {
       "creator": "12084109",
-      "name": "uconn",
+      "name": "Beach Trip",
       "startTime": "1/25/2025",
       "endTime": "1/26/2025",
-      "description": "spring semester",
-      "location": "storrs"
+      "description": "Group trip to the beach",
+      "location": "Misquamicut"
     },
     {
       "creator": "1207912",
-      "name": "tristans dorm",
+      "name": "Movie Theater",
       "startTime": "1/25/2025",
       "endTime": "1/26/2025",
-      "description": "hispanic",
-      "location": "mexico"
+      "description": "Everyone is going to watch Moana 2",
+      "location": "Plainville"
     }
   ]

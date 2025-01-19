@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Outing from '@/components/Outing';
+import outingsData from '@/mock_data/outings.json'; // Import the mock data
 import friendData from '@/mock_data/friends.json'; // Import the mock data
 
 const HomePage = () => {
@@ -125,14 +126,14 @@ const HomePage = () => {
           Weave Your Next Outing
         </button>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {outings.map((outing, index) => (
+          {outingsData.map((outing, index) => (
             <div key={index} className="outing-card p-4 border rounded shadow">
-              <h2 className="text-xl font-semibold">{outing.title}</h2>
+              <h2 className="text-xl font-semibold">{outing.name}</h2>
               <p className="text-gray-600">{outing.description}</p>
-              <p className="text-gray-600">Date: {outing.date}</p>
+              <p className="text-gray-600">Date: {outing.startTime}</p>
               <p className="text-gray-600">Location: {outing.location}</p>
               <div className="tags mt-2">
-                {outing.tags.map((tag, tagIndex) => (
+                {selectedTags.map((tag, tagIndex) => (
                   <span key={tagIndex} className="badge badge-emerald mr-2">
                     {tag}
                   </span>
@@ -142,23 +143,7 @@ const HomePage = () => {
           ))}
         </div>
         </div>
-        <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-          {outings.length === 0 && hasSubmitted && (
-            <p style={{ fontSize: '18px', color: '#999' }}>No outings available</p>
-          )}
-          {outings.map((outing, index) => (
-            <Outing
-              key={index}
-              id={outing.id}
-              name={outing.name}
-              description={outing.description}
-              userEmail={outing.userEmail}
-              startTime={outing.startTime}
-              endTime={outing.endTime}
-              participants={outing.participants}
-            />
-          ))}
-        </div>
+        
       </div>
     </div>
   );
