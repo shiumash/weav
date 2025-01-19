@@ -2,39 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
+import Outing from '@/components/Outing';
 import friendData from '@/mock_data/friends.json'; // Import the mock data
 
-const HomePage = ({ userId }) => {
+const HomePage = () => {
   const [friends, setFriends] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
+  const [outings, setOutings] = useState([]); // Initialize as an empty array
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // State for selected tags
   const [participantEmails, setParticipantEmails] = useState([]); // State for participant emails
-  const [userData, setUserData] = useState(null); // State for user data
 
   useEffect(() => {
     // Use the imported mock data to set the friends list
     setFriends(friendData.friends);
-
-    // Fetch user data
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`/api/user/${userId}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setUserData(data);
-        setFriends(data.friends);
-        } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
-  }, [userId]);
-
-  
+  }, []);
 
   const handleFriendClick = (friend) => {
     setSelectedFriends((prevSelectedFriends) => {
@@ -50,24 +32,18 @@ const HomePage = ({ userId }) => {
     setParticipantEmails(selectedFriends);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     getParticipantEmails();
 
-    if (!userData) {
-      console.error('User data is not loaded');
-      return;
-    }
-
     const payload = {
-      senderEmail: userData.email, // Use actual current user email
+      senderEmail: 'currentUser@example.com', // Replace with actual current user email
       participantEmails,
       title: 'Outing Title', // Placeholder title
     };
 
     try {
       // Send the selected friends to the backend
-      const response = await fetch('/api/events', {
+      const response = await fetch('/api/outing', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,6 +58,7 @@ const HomePage = ({ userId }) => {
       const outingsData = await response.json();
       console.log('Retrieved outings data:', outingsData);
 
+      setOutings(outingsData);
       setHasSubmitted(true);
       console.log('Updated outings state:', outingsData);
     } catch (error) {
@@ -97,6 +74,11 @@ const HomePage = ({ userId }) => {
     setSelectedTags(value);
   };
 
+  const handleWeaveOutingClick = () => {
+    // Set the outings state with the imported outings data
+    setOutings(outingsData.outings);
+  };
+
   const filteredFriends = selectedTags.length > 0
     ? friends.filter((friend) => selectedTags.every((tag) => friend.tags.includes(tag)))
     : friends;
@@ -106,69 +88,77 @@ const HomePage = ({ userId }) => {
   return (
     <div className="home-container" style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
       <Header />
-      <button
-        className="btn btn-primary plan-wevent-button"
-        onClick={() => document.getElementById('my_modal').showModal()}
-        style={{ backgroundColor: '#10B981', position: 'absolute', top: '20px', right: '150px' }}
-      >
-        Plan Wevent
-      </button>
-      <dialog id="my_modal" className="modal">
-        <form method="dialog" className="modal-box" style={{ backgroundColor: '#f8f9fa', color: '#333' }}>
-          <h2 className="text-3xl font-bold mb-6 text-slate-800">Plan Your Wevent</h2>
-          <div className="friends-list" style={{ textAlign: 'center', width: '100%' }}>
-            <div style={{ marginBottom: '20px' }}>
-              <label htmlFor="tag-filter" className="text-slate-800" style={{ marginRight: '10px', fontSize: '18px' }}>Filter by tags:</label>
-              <select
-                id="tag-filter"
-                multiple
-                value={selectedTags}
-                onChange={handleTagChange}
-                className="text-white bg-slate-800"
-                style={{ height: '100px', width: '200px', fontSize: '16px', padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
-              >
-                {uniqueTags.map((tag) => (
-                  <option key={tag} value={tag} className="bg-slate-800 text-white">{tag}</option>
-                ))}
-              </select>
-            </div>
-            <h2 className="text-3xl font-bold mb-6 text-slate-800">Select Friends!</h2>
-            <ul style={{ listStyleType: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {filteredFriends.map((friend) => (
-                <li
-                  key={friend.email}
-                  className={`mb-4 cursor-pointer ${selectedFriends.includes(friend.email) ? 'bg-teal-200' : 'bg-white'}`}
-                  onClick={() => handleFriendClick(friend)}
-                  style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', margin: '10px', width: '150px', textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                >
-                  {friend.name}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={handleSubmit}
-              className='mt-4 p-2 text-white rounded bg-slate-800'
-              style={{ fontSize: '18px', padding: '10px 20px', cursor: 'pointer', border: 'none', borderRadius: '5px' }}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px' }}>
+        <div className="friends-list" style={{ textAlign: 'center', width: '100%' }}>
+          <h2 className="text-3xl font-bold mb-6 text-slate-800">Select Friends!</h2>
+          <div style={{ marginBottom: '20px' }}>
+            <label htmlFor="tag-filter" className="text-slate-800" style={{ marginRight: '10px', fontSize: '18px' }}>Filter by tags:</label>
+            <select
+              id="tag-filter"
+              multiple
+              value={selectedTags}
+              onChange={handleTagChange}
+              className="text-white bg-slate-800"
+              style={{ height: '100px', width: '200px', fontSize: '16px', padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
             >
-              Weav Your Next Outing!
-            </button>
+              {uniqueTags.map((tag) => (
+                <option key={tag} value={tag} className="bg-slate-800 text-white">{tag}</option>
+              ))}
+            </select>
           </div>
-          <div className="modal-action">
-            <button className="btn btn-secondary">Close</button>
-          </div>
-        </form>
-      </dialog>
-      <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-        {userData ? (
-          <div className="card" style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '5px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-            <h3 className="text-2xl font-bold mb-4">{userData.firstName} {userData.lastName}</h3>
-            <p><strong>Username:</strong> {userData.username}</p>
-            <p><strong>Email:</strong> {userData.email}</p>
-            <p><strong>Tags:</strong> {userData.tags.join(', ')}</p>
-          </div>
-        ) : (
-          <p className="text-xl text-gray-500">No current Wevents</p>
-        )}
+          <ul style={{ listStyleType: 'none', padding: 0, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {filteredFriends.map((friend) => (
+              <li
+                key={friend.email}
+                className={`mb-4 cursor-pointer ${selectedFriends.includes(friend.email) ? 'bg-teal-200' : 'bg-white'}`}
+                onClick={() => handleFriendClick(friend)}
+                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', margin: '10px', width: '150px', textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+              >
+                {friend.name}
+              </li>
+            ))}
+          </ul>
+          <button
+          className="btn btn-primary mb-4"
+          onClick={handleWeaveOutingClick}
+        >
+          Weave Your Next Outing
+        </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {outings.map((outing, index) => (
+            <div key={index} className="outing-card p-4 border rounded shadow">
+              <h2 className="text-xl font-semibold">{outing.title}</h2>
+              <p className="text-gray-600">{outing.description}</p>
+              <p className="text-gray-600">Date: {outing.date}</p>
+              <p className="text-gray-600">Location: {outing.location}</p>
+              <div className="tags mt-2">
+                {outing.tags.map((tag, tagIndex) => (
+                  <span key={tagIndex} className="badge badge-emerald mr-2">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        </div>
+        <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
+          {outings.length === 0 && hasSubmitted && (
+            <p style={{ fontSize: '18px', color: '#999' }}>No outings available</p>
+          )}
+          {outings.map((outing, index) => (
+            <Outing
+              key={index}
+              id={outing.id}
+              name={outing.name}
+              description={outing.description}
+              userEmail={outing.userEmail}
+              startTime={outing.startTime}
+              endTime={outing.endTime}
+              participants={outing.participants}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

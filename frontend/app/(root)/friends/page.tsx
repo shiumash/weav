@@ -1,72 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import friendData from "@/mock_data/friends.json";
+import Friend from '@/components/Friend';
 
-const FriendPage = (pid: string) => {
-  const [friends, setFriends] = useState<any[]>([]);
-  const [newFriendEmail, setNewFriendEmail] = useState('');
+interface Friend {
+  email: string;
+  tags: {[key:string]: boolean};
+  name: string;
+  profile_picture: string;
+}
 
-  const postFriendData = async (newFriend: any) => {
-    try {
-      const response = await fetch('/api/users?action=friend', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newFriend),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error adding friend:', error);
-      throw error;
-    }
-  };
+const FriendPage = () => {
+  const [friends, setFriends] = useState<Friend[]>(friendData.friends);
+  const [newFriendEmail, setNewFriendEmail] = useState<string>('');
 
-  const getFriendData = async (friendId?: string) => {
-    try {
-      const baseUrl = '/api/users';
-      const url = friendId 
-        ? `${baseUrl}/${friendId}?action=friends`
-        : `${baseUrl}?action=friends`;
-  
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setFriends(data);
-    } catch (error) {
-      console.error('Error getting friends:', error);
-    }
-  };
 
   useEffect(() => {
-    getFriendData();
+      setFriends(friendData.friends.map(friend => ({
+        ...friend,
+        tags: friend.tags
+      })));
   }, []);
 
-  const handleAddFriend = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newFriend = { email: newFriendEmail, tags: [], name: '', profile_picture: '' };
-    try {
-      const addedFriend = await postFriendData(newFriend);
-      setFriends([...friends, addedFriend]);
+  const handleAddFriend = (e: React.FormEvent) => {
+      e.preventDefault();
+      const newFriend: Friend = { email: newFriendEmail, tags: {}, name: '', profile_picture: '' };
+      const updatedFriends = [...friends, newFriend];
+      setFriends(updatedFriends);
       setNewFriendEmail('');
-    } catch (error) {
-      // Handle error if needed
-    }
-  };
-
-  const handleRefresh = () => {
-    getFriendData();
   };
 
   return (
@@ -74,6 +36,7 @@ const FriendPage = (pid: string) => {
       <div className="ml-20 bg-slate-50 color" style={{ width: 'calc(100% - 80px)' }}>
         <section className="px-4 py-10">
           <div className="container-xl lg:container m-auto">
+
             {/* Page Heading, Add Friend Button, Refresh Friends Button */}
             <div className="flex items-center justify-between px-4 mb-6">
               {/* Your Friends Heading */}
@@ -90,16 +53,16 @@ const FriendPage = (pid: string) => {
                 >
                   Add Friend
                 </button>
-                {/* Refresh Button */}
+
+                {/* Refresh Friends List Button */}
                 <button 
                   className="btn border-emerald-400 bg-emerald-400 text-white hover:border-emerald-700 hover:bg-emerald-700 px-4 py-2 rounded-md shadow-md" 
-                  onClick={handleRefresh}
+                  onClick={() => {}}
                 >
-                  Refresh
+                  Refresh Friends List
                 </button>
               </div>
             </div>
-
             {/* Add Friend Modal */}
             <dialog 
               id="my_modal_1" 
@@ -138,11 +101,53 @@ const FriendPage = (pid: string) => {
                 </form>
                 <div className="modal-action">
                   <form method="dialog">
-                    <button className="btn">Close</button>
+                    {/* Close button */}
+                    <button 
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:ring-gray-200"
+                    >
+                      Close
+                    </button>
                   </form>
                 </div>
               </div>
             </dialog>
+
+            <div className="flex flex-col items-center gap-6">
+              {friends.map((friend, index) => {
+                const trueTags = friend.tags;
+                return (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between bg-white shadow-md border border-gray-200 rounded-lg p-4 w-full max-w-3xl"
+                  >
+                    {/* Profile Picture */}
+                    <img 
+                      src={friend.profile_picture} 
+                      alt={friend.name} 
+                      className="w-16 h-16 rounded-full object-cover mr-4"
+                    />
+
+                    {/* Friend Details */}
+                    <div className="flex flex-col flex-1">
+                      <h3 className="text-lg font-semibold text-gray-800">{friend.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{friend.email}</p>
+                    </div>
+
+                    {/* Friend Tags */}
+                    <div className="flex flex-wrap justify-end gap-1">
+                      {trueTags.slice(0, 3).map((tag, idx) => (
+                        <span 
+                          key={idx} 
+                          className="badge px-3 py-1 text-sm text-zinc-100 bg-slate-800 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
       </div>

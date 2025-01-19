@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import userData from '../../../mock_data/user.json';
 import "./Profile.css";
 
@@ -9,43 +9,26 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(userData);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await fetch('/api/user?action=profile');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setProfileData(data);
-        setFormData(data);
-      } catch (error) {
-        console.error('Error fetching profile data:', error);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
-
-  const putProfileData = async (updatedProfile) => {
-    const response = await fetch('/api/user?action=profile', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedProfile),
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return await response.json();
-  };
-
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleSaveClick = async () => {
+    userData.username = formData.username;
+    userData.firstName = formData.firstName;
+    userData.lastName = formData.lastName;
+    
+    userData.tags = [];
+    if (formData.is_spicy) {
+      userData.tags.push("Spicy");
+    }
+    if (formData.is_vegetarian) {
+      userData.tags.push("Vegetarian");
+    }
+    if (formData.is_family) {
+      userData.tags.push("Family");
+    }
+    
     setProfileData(formData);
     setIsEditing(false);
   };
@@ -63,40 +46,51 @@ const ProfilePage = () => {
     });
   };
 
-  const handleVegetarianToggleTag = () => {
-    setFormData({
-      ...formData,
-      is_vegetarian: !formData.is_vegetarian
+  const handleSpicyToggleTag = () => {
+    setFormData((prevFormData) => {
+      const newTags = prevFormData.tags.includes("Spicy")
+        ? prevFormData.tags.filter(tag => tag !== "Spicy")
+        : [...prevFormData.tags, "Spicy"];
+      return {
+        ...prevFormData,
+        tags: newTags,
+      };
     });
   };
   
-  const handleSpicyToggleTag = () => {
-    setFormData({
-      ...formData,
-      is_spicy: !formData.is_spicy
+  const handleVegetarianToggleTag = () => {
+    setFormData((prevFormData) => {
+      const newTags = prevFormData.tags.includes("Vegetarian")
+        ? prevFormData.tags.filter(tag => tag !== "Vegetarian")
+        : [...prevFormData.tags, "Vegetarian"];
+      return {
+        ...prevFormData,
+        tags: newTags,
+      };
+    });
+  };
+  
+  const handleFamilyToggleTag = () => {
+    setFormData((prevFormData) => {
+      const newTags = prevFormData.tags.includes("Family")
+        ? prevFormData.tags.filter(tag => tag !== "Family")
+        : [...prevFormData.tags, "Family"];
+      return {
+        ...prevFormData,
+        tags: newTags,
+      };
     });
   };
 
-  const handleFamilyToggleTag = () => {
-    setFormData({
-      ...formData,
-      is_family: !formData.is_family
-    });
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0];
-    if (file) {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          pfp: reader.result as string,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+        setFormData(formData);
+    };
+  }}
 
   return (
     <div className="profile-container">
@@ -117,7 +111,7 @@ const ProfilePage = () => {
         ) : (
           <img
             className="profile-image"
-            src={profileData.pfp}
+            src={profileData?.pfp || ''}
             alt={profileData.username}
           />
         )}
@@ -130,7 +124,7 @@ const ProfilePage = () => {
                   <input
                     type="text"
                     name="firstName"
-                    value={formData.firstName}
+                    value={formData?.firstName}
                     onChange={handleChange}
                     className="input input-bordered"
                   />
@@ -140,7 +134,7 @@ const ProfilePage = () => {
                   <input
                     type="text"
                     name="lastName"
-                    value={formData.lastName}
+                    value={formData?.lastName}
                     onChange={handleChange}
                     className="input input-bordered"
                   />
@@ -148,7 +142,7 @@ const ProfilePage = () => {
               </>
             ) : (
               <div className="text-4xl mt-3">
-                {profileData.firstName} {profileData.lastName}
+                {profileData?.firstName} {profileData?.lastName}
               </div>
             )}
           </strong>
@@ -161,12 +155,12 @@ const ProfilePage = () => {
             <input
               type="text"
               name="username"
-              value={formData.username}
+              value={formData?.username}
               onChange={handleChange}
               className="input input-bordered"
             />
           ) : (
-            profileData.username
+            profileData?.username
           )}
         </div>
         <div className="mt-3">
@@ -175,12 +169,12 @@ const ProfilePage = () => {
             <input
               type="text"
               name="email"
-              value={formData.email}
+              value={formData?.email}
               onChange={handleChange}
               className="input input-bordered"
             />
           ) : (
-            profileData.email
+            profileData?.email
           )}
         </div>
         <div className="mt-3">
@@ -193,7 +187,7 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.is_vegetarian}
+                    checked={formData.tags.includes("Vegetarian")}
                     onChange={handleVegetarianToggleTag}
                   />
                 </label>
@@ -204,7 +198,7 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.is_spicy}
+                    checked={formData.tags.includes("Spicy")}
                     onChange={handleSpicyToggleTag}
                   />
                 </label>
@@ -215,7 +209,7 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     className="toggle toggle-emerald ml-1"
-                    checked={formData.is_family}
+                    checked={formData.tags.includes("Family")}
                     onChange={handleFamilyToggleTag}
                   />
                 </label>
@@ -223,9 +217,9 @@ const ProfilePage = () => {
             </div>
           ) : (
             <div>
-              {profileData.is_vegetarian && <span className="badge badge-emerald mr-2">Vegetarian</span>}
-              {profileData.is_spicy && <span className="badge badge-emerald mr-2">Spicy</span>}
-              {profileData.is_family && <span className="badge badge-emerald mr-2">Family</span>}
+              {profileData.tags.includes("Vegetarian") ? <span className="badge badge-emerald mr-2">Vegetarian</span> : null}
+              {profileData.tags.includes("Spicy") && <span className="badge badge-emerald mr-2">Spicy</span>}
+              {profileData.tags.includes("Family") && <span className="badge badge-emerald mr-2">Family</span>}
             </div>
           )}
         </div>
