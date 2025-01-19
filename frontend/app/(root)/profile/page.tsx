@@ -22,16 +22,39 @@ const ProfilePage = () => {
     };
 
     fetchProfileData();
-  });
+  }, []);
+
+  const postProfileData = async (updatedProfile) => {
+    try {
+      const response = await fetch('/api/user?action=profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  };
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  const handleSaveClick = () => {
-    setProfileData(formData);
-    setIsEditing(false);
-    // Here you would also update the JSON data on the server or local storage
+  const handleSaveClick = async () => {
+    try {
+      const updatedProfile = await postProfileData(formData);
+      setProfileData(updatedProfile);
+      setIsEditing(false);
+    } catch (error) {
+      // Handle error if needed
+    }
   };
 
   const handleCancelClick = () => {
