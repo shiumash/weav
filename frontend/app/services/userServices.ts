@@ -28,6 +28,43 @@ const addUserData = async ({ firstName, lastName, userName, email, gcal_permissi
   })
 }
 
+interface UpdateUserData {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  email?: string;
+  is_vegetarian?: boolean;
+  is_spicy?: boolean;
+  is_family?: boolean;
+  gcal_permission?: boolean;
+}
+
+const updateUserData = async (userData: UpdateUserData) => {
+  try {
+    const userIdBigInt = BigInt(userData.id);
+    
+    return await prisma.user.update({
+      where: {
+        id: userIdBigInt
+      },
+      data: {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        username: userData.username,
+        email: userData.email,
+        is_vegetarian: userData.is_vegetarian,
+        is_spicy: userData.is_spicy,
+        is_family: userData.is_family,
+        gcal_permission: userData.gcal_permission
+      }
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw new Error('Failed to update user');
+  }
+};
+
 const addFriendData = async (userId: string, targetEmail: string) => {
   try {
     const userIdBigInt = BigInt(userId);
@@ -171,5 +208,6 @@ export {
   addUserData,
   fetchUserProfile,
   fetchUserFriends,
-  addFriendData
+  addFriendData,
+  updateUserData
 }
