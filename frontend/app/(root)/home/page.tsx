@@ -128,10 +128,13 @@ const HomePage = () => {
           {outings.map((outing, index) => (
             <Outing
               key={index}
+              id={outing.id}
               name={outing.name}
-              date={outing.date}
               description={outing.description}
-              location={outing.location}
+              userEmail={outing.userEmail}
+              startTime={outing.startTime}
+              endTime={outing.endTime}
+              participants={outing.participants}
             />
           ))}
         </div>
