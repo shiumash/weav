@@ -118,10 +118,10 @@ const ProfilePage = () => {
             profileData.email
           )}
         </div>
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <strong>Friends:</strong>{' '}
           {profileData.friends.join(', ')}
-        </div>
+        </div> */}
         <div className="mt-3">
           <strong>Tags:</strong>{' '}
           {isEditing ? (

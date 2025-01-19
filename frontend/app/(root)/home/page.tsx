@@ -11,6 +11,7 @@ const HomePage = () => {
   const [outings, setOutings] = useState([]); // Initialize as an empty array
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // State for selected tags
+  const [participantEmails, setParticipantEmails] = useState([]); // State for participant emails
 
   useEffect(() => {
     // Use the imported mock data to set the friends list
@@ -19,29 +20,47 @@ const HomePage = () => {
 
   const handleFriendClick = (friend) => {
     setSelectedFriends((prevSelectedFriends) => {
-      if (prevSelectedFriends.includes(friend)) {
-        return prevSelectedFriends.filter((f) => f !== friend);
+      if (prevSelectedFriends.includes(friend.email)) {
+        return prevSelectedFriends.filter((email) => email !== friend.email);
       } else {
-        return [...prevSelectedFriends, friend];
+        return [...prevSelectedFriends, friend.email];
       }
     });
   };
 
+  const getParticipantEmails = () => {
+    setParticipantEmails(selectedFriends);
+  };
+
   const handleSubmit = async () => {
+    getParticipantEmails();
+
     const payload = {
-      selectedBy: 'currentUser', // Replace with actual current user
-      selectedFriends,
+      senderEmail: 'currentUser@example.com', // Replace with actual current user email
+      participantEmails,
+      title: 'Outing Title', // Placeholder title
     };
 
     try {
-      // Simulate sending data to the backend
-      console.log('Sending selected friends to backend:', payload);
+      // Send the selected friends to the backend
+      const response = await fetch('/api/outing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-      // Retrieve outings data from the mock data
-      const outingsData = friendData.outings;
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const outingsData = await response.json();
+      console.log('Retrieved outings data:', outingsData);
 
       setOutings(outingsData);
       setHasSubmitted(true);
+      console.log('Updated outings state:', outingsData);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -86,7 +105,7 @@ const HomePage = () => {
             {filteredFriends.map((friend) => (
               <li
                 key={friend.email}
-                className={`mb-4 cursor-pointer ${selectedFriends.includes(friend) ? 'bg-teal-200' : 'bg-white'}`}
+                className={`mb-4 cursor-pointer ${selectedFriends.includes(friend.email) ? 'bg-teal-200' : 'bg-white'}`}
                 onClick={() => handleFriendClick(friend)}
                 style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', margin: '10px', width: '150px', textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
               >
@@ -103,20 +122,18 @@ const HomePage = () => {
           </button>
         </div>
         <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-          {outings && outings.length > 0 ? (
-            outings.map((outing, index) => (
-              <Outing
-                key={index}
-                score={outing.score}
-                name={outing.name}
-                date={outing.date}
-                description={outing.description}
-                location={outing.location}
-              />
-            ))
-          ) : (
-            hasSubmitted && <p style={{ fontSize: '18px', color: '#999' }}>No outings available</p>
+          {outings.length === 0 && hasSubmitted && (
+            <p style={{ fontSize: '18px', color: '#999' }}>No outings available</p>
           )}
+          {outings.map((outing, index) => (
+            <Outing
+              key={index}
+              name={outing.name}
+              date={outing.date}
+              description={outing.description}
+              location={outing.location}
+            />
+          ))}
         </div>
       </div>
     </div>
