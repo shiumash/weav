@@ -6,11 +6,11 @@ const SideBar = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Profile', path: '/profile' },
     { name: 'Friends', path: '/friends' },
+    { name: 'Profile', path: '/profile' },
   ]
   return (
-    <div className='sticky top-0 left-0 h-screen w-48 bg-zinc-900'>
+    <div className='sticky top-0 left-0 h-screen w-48 shadow-inner-2xl bg-slate-800'>
       <div className='p-5 border-b border-gray-700'>
         <h1 className='text-2xl font-bold text-zinc-100'>weav</h1>
       </div>
@@ -18,7 +18,7 @@ const SideBar = () => {
         <ul>
           {
             navItems.map((item) => (
-              <li key={item.name} className='mb-4 text-zinc-100'>
+              <li key={item.name} className='mb-4 font-bold text-zinc-100'>
                 <ActiveLink href={item.path}>
                   {item.name}  
                 </ActiveLink> 
