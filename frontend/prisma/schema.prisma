@@ -1,0 +1,67 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+model User {
+  id             BigInt   @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  username       String
+  email          String   @unique
+  is_vegetarian  Boolean  @default(false)
+  is_spicy       Boolean  @default(false)
+  is_family      Boolean  @default(false)
+  gcal_permission Boolean  @default(false)
+ 
+  // Relations
+  friends_initiated    Friend[]            @relation("UserFriends")
+  friends_received     Friend[]            @relation("FriendUser")
+  created_events      Event[]             @relation("EventCreator")
+  participated_events EventParticipant[]
+ 
+  @@map("users")
+}
+ 
+model Friend {
+  user_id    BigInt
+  friend_id  BigInt
+  user       User     @relation("UserFriends", fields: [user_id], references: [id])
+  friend     User     @relation("FriendUser", fields: [friend_id], references: [id])
+ 
+  @@id([user_id, friend_id])
+  @@map("friends")
+}
+ 
+model Event {
+  id          BigInt   @id @default(autoincrement())
+  creator_id  BigInt
+  title       String
+  description String
+  start_time  DateTime
+  end_time    DateTime
+  everyone_fw Boolean  @default(false)
+ 
+  // Relations
+  creator     User              @relation("EventCreator", fields: [creator_id], references: [id])
+  participants EventParticipant[]
+ 
+  @@map("events")
+}
+ 
+model EventParticipant {
+  event_id    BigInt
+  user_id     BigInt
+ 
+  // Relations
+  event       Event    @relation(fields: [event_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+ 
+  @@id([event_id, user_id])
+  @@map("event_participants")
+}
