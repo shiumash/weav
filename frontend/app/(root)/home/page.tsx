@@ -103,7 +103,7 @@ const HomePage = () => {
           </button>
         </div>
         <div className="outings-container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-          {outings.length > 0 ? (
+          {outings && outings.length > 0 ? (
             outings.map((outing, index) => (
               <Outing
                 key={index}
